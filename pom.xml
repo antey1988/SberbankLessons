@@ -15,6 +15,7 @@
         <module>lesson1</module>
         <module>lesson4</module>
         <module>lesson7_SocialNetwork</module>
+<!--        <module>Friends</module>-->
     </modules>
 
     <properties>
@@ -24,7 +25,7 @@
         <!-- Версии зависимостей -->
 <!--        <slf4j.version>1.7.25</slf4j.version>-->
 <!--        <logback.version>1.2.3</logback.version>-->
-<!--        <junit.version>4.12</junit.version>-->
+        <junit.version>4.12</junit.version>
     </properties>
 
     <build>
@@ -43,10 +44,10 @@
 
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>junit</groupId>-->
-<!--            <artifactId>junit</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.slf4j</groupId>-->
 <!--            <artifactId>slf4j-api</artifactId>-->
@@ -70,11 +71,11 @@
 <!--                <version>${logback.version}</version>-->
 <!--            </dependency>-->
             <!-- Тесты -->
-<!--            <dependency>-->
-<!--                <groupId>junit</groupId>-->
-<!--                <artifactId>junit</artifactId>-->
-<!--                <version>${junit.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -10,6 +10,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>lesson7_SocialNetwork</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>WorkWithAccount</module>
+        <module>WorkWithFriends</module>
+        <module>WorkWithFriends</module>
+        <module>WorkWithMedia</module>
+        <module>WorkWithMessages</module>
+    </modules>
     <properties>
         <!-- Версии зависимостей -->
                 <junit.version>4.12</junit.version>
