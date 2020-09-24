@@ -11,13 +11,5 @@
 
     <artifactId>WorkWithMedia</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.gmail.antey1988</groupId>
-            <artifactId>WorkWithAccount</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
 
 </project>
