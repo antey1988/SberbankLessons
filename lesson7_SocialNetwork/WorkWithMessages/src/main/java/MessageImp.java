@@ -1,17 +1,29 @@
-public class MessageImp implements Message{
+import java.util.HashMap;
+import java.util.Map;
+
+public class MessageImp implements Message {
+    private Map<Account, Chat> chats = new HashMap<>();
+
     @Override
     public Chat startChat(Account account) {
-        System.out.printf("Создан чат с пользователем %s%n", account);
-        return new Chat(account);
+        if (chats.containsKey(account))
+            return chats.get(account);
+        else {
+            Chat chat = new Chat();
+            System.out.printf("Создан чат с пользователем %s%n", account);
+            chats.put(account, chat);
+            return chat;
+        }
     }
 
     @Override
-    public void stopChat(Chat chat) {
-        System.out.printf("Чат с пользователем %s закрыт%n", chat.getAccount());
+    public void closeChat(Account account) {
+        System.out.printf("Чат с пользователем %s закрыт%n", account);
     }
 
     @Override
-    public void delete(Chat chat) {
-        System.out.printf("Чат с пользователем %s удален%n", chat.getAccount());
+    public void deleteChat(Account account) {
+        chats.remove(account);
+        System.out.printf("Чат с пользователем %s удален%n", account);
     }
 }

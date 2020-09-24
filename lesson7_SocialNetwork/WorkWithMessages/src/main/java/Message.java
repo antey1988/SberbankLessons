@@ -1,5 +1,5 @@
 public interface Message {
     Chat startChat(Account account);
-    void stopChat(Chat chat);
-    void delete(Chat chat);
+    void closeChat(Account account);
+    void deleteChat(Account account);
 }

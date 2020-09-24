@@ -1,5 +1,6 @@
 public interface Media {
-    void addMusic(String name);
-    void removeMusic(MediaContent media);
-    void listenMusic(MediaContent media);
+    void showContent();
+    void addContent(MediaContent media);
+    void removeContent(MediaContent media);
+    void startContent(MediaContent media);
 }

@@ -1,7 +1,8 @@
-import java.util.List;
+import java.util.Set;
 
 public interface Friends {
-    List<Account> searchFriends(Account account);
+    void showFriends();
+    Set<Account> searchFriends();
     void addFriends(Account account);
     void removeFriends(Account account);
 
