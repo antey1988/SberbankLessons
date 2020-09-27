@@ -15,7 +15,8 @@
         <module>lesson1</module>
         <module>lesson4</module>
         <module>lesson7_SocialNetwork</module>
-<!--        <module>Friends</module>-->
+        <module>lesson8_ClasseLoaders</module>
+        <!--        <module>Friends</module>-->
     </modules>
 
     <properties>
