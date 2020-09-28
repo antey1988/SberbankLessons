@@ -5,10 +5,28 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class PluginClassLoader extends ClassLoader {
+
+    /*@Override
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        synchronized (getClassLoadingLock(name)) {
+            // First, check if the class has already been loaded
+            Class<?> c = findLoadedClass(name);
+            if (c != null) {
+                return c;
+            }
+            c = findClass(name);
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }*/
+
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         byte[] bytesclass = loadClassFromFile(name);
-        return defineClass(null, bytesclass, 0, bytesclass.length);
+        Class<?> c = defineClass(null, bytesclass, 0, bytesclass.length);
+        return c;
     }
 
     private byte[] loadClassFromFile(String name) {
