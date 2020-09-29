@@ -11,7 +11,6 @@ public class LoaderImp implements Loader {
     @Override
     public void doHardWork(String string, int n) {
         System.out.printf("Объект %s : выведена строка %s и число %d%n", this.toString(), string, n);
-
     }
 
     @Override
