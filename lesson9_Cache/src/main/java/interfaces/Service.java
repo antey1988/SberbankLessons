@@ -1,10 +1,18 @@
 package interfaces;
 
+import annotations.Cache;
+import annotations.Timer;
+
 import java.util.Date;
 import java.util.List;
 
 public interface Service {
-    void doHardWork(String string, int n);
-    List<String> run(String item, double value, Date date);
+    @Cache()
+    @Timer()
+    String printStringInteger(String string, int n);
+
+    @Cache(identityBy = {String.class, int.class}, sizeList = 5, zip = false)
+    List<String> run(String item, int value, Date date);
+
     List<String> work(String item);
 }

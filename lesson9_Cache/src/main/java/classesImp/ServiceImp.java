@@ -9,13 +9,27 @@ import java.util.List;
 
 public class ServiceImp implements Service {
     @Override
-    public void doHardWork(String string, int n) {
-        System.out.printf("Объект %s : выведена строка %s и число %d%n", this.toString(), string, n);
+    public String printStringInteger(String string, int n) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return  String.format("Объект %s : выведена строка %s и число %d%n", this.toString(), string, n);
     }
 
     @Override
-    public List<String> run(String item, double value, Date date) {
-        return new ArrayList<>(Arrays.asList("one", "two"));
+    public List<String> run(String item, int value, Date date) {
+        List<String> list = new ArrayList<>(value);
+        for (int i = 0; i < value; i++) {
+            list.add(item);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     @Override

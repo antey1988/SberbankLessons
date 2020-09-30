@@ -3,20 +3,23 @@ import classesImp.ServiceImp;
 import interfaces.Loader;
 import interfaces.Service;
 
+import java.util.Date;
+
 public class Main {
     public static void main(String[] args) {
         Loader loader1 = new LoaderImp();
-        loader1.doHardWork("fdfs", 2);
-
         Service service1 = new ServiceImp();
-        service1.doHardWork("dfdf", 4);
-
         CacheProxy cacheProxy = new CacheProxy();
-        Loader loader2 = cacheProxy.cache(loader1);
-        loader2.doHardWork("текст", 6);
 
         Service service2 = cacheProxy.cache(service1);
-        service2.doHardWork("текст", 8);
+        /*System.out.println(service2.printStringInteger("текст", 8));
+        System.out.println(service2.printStringInteger("текст", 9));
+        System.out.println(service2.printStringInteger("текст", 9));
+        System.out.println(service2.printStringInteger("текст", 7));*/
+//        System.out.println(int.class.getSimpleName() + " " + Integer.class.getSimpleName());
+        System.out.println(service2.run("test", 15, new Date()));
+        System.out.println(service2.run("test1", 10, new Date()));
+        System.out.println(service2.run("test", 15, new Date()));
 
 //        loader2.doHardWork("text", 9);
     }
