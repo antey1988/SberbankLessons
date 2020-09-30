@@ -1,4 +1,5 @@
 import annotations.Cache;
+import annotations.SkipType;
 import annotations.TypeCache;
 import exceptions.CountTypeIdentityException;
 import exceptions.IdentityException;
@@ -124,7 +125,7 @@ public class CacheProxy implements InvocationHandler {
             Class<?> clazzAnnot = classes[i];
             if (clazzAnnot.isPrimitive())
                 clazzAnnot = mapPrimitive.get(clazzAnnot.getSimpleName());
-            if (clazzAnnot != null) {
+            if (clazzAnnot != SkipType.class) {
                 for (; j < args.length; j++) {
                     Class<?> clazzArgs = args[j].getClass();
                     if (clazzAnnot.isAssignableFrom(clazzArgs)) {

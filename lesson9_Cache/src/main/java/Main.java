@@ -17,9 +17,9 @@ public class Main {
         System.out.println(service2.printStringInteger("текст", 9));
         System.out.println(service2.printStringInteger("текст", 7));*/
 //        System.out.println(int.class.getSimpleName() + " " + Integer.class.getSimpleName());
-        System.out.println(service2.run("test", 15, new Date()));
-        System.out.println(service2.run("test1", 10, new Date()));
-        System.out.println(service2.run("test", 15, new Date()));
+        System.out.println(service2.run("","test", 15, new Date()));
+        System.out.println(service2.run("","test1", 10, new Date()));
+        System.out.println(service2.run("","test", 15, new Date()));
 
 //        loader2.doHardWork("text", 9);
     }

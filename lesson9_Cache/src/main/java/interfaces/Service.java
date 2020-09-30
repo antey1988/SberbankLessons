@@ -1,6 +1,7 @@
 package interfaces;
 
 import annotations.Cache;
+import annotations.SkipType;
 import annotations.Timer;
 
 import java.util.Date;
@@ -11,8 +12,8 @@ public interface Service {
     @Timer()
     String printStringInteger(String string, int n);
 
-    @Cache(identityBy = {String.class, int.class}, sizeList = 5, zip = false)
-    List<String> run(String item, int value, Date date);
+    @Cache(identityBy = {SkipType.class, String.class, int.class}, sizeList = 5, zip = false)
+    List<String> run(String str, String item, int value, Date date);
 
     List<String> work(String item);
 }

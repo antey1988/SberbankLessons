@@ -19,7 +19,7 @@ public class ServiceImp implements Service {
     }
 
     @Override
-    public List<String> run(String item, int value, Date date) {
+    public List<String> run(String str, String item, int value, Date date) {
         List<String> list = new ArrayList<>(value);
         for (int i = 0; i < value; i++) {
             list.add(item);
