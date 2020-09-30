@@ -134,7 +134,7 @@ public class CacheProxy implements InvocationHandler {
                         break;
                     }
                 }
-            }
+            } else j++;
 
             if (j >= args.length ) {
                 StringBuilder stringBuilder = new StringBuilder("");
