@@ -20,9 +20,7 @@ public class ServiceImp implements Service {
 
     @Override
     public List<String> run(String str, String item, int value, Date date) {
-        IntStream si = IntStream.range(0, value);
-        Stream<String> ss = si.mapToObj(n-> item + n);
-        List<String> ls = ss.collect(Collectors.toList());
+        List<String> ls = IntStream.range(0, value).mapToObj(n-> item + n).collect(Collectors.toList());
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
