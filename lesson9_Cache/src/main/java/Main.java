@@ -10,7 +10,8 @@ public class Main {
     public static void main(String[] args) {
         Loader loader1 = new LoaderImp();
         Service service1 = new ServiceImp();
-        String rootDir = "/home/oleg/IdeaProjects/SberbankMaven/lesson9_Cache/src/main/resources";
+        String rootDir //= "/home/oleg/IdeaProjects/SberbankMaven/lesson9_Cache/src/main/resources";
+                        = "E:\\User\\Oleg\\IdeaProjects\\_SberbankLessons\\lesson9_Cache\\src\\main\\resources";
         CacheProxy cacheProxy = new CacheProxy(rootDir,true);
 
         Service service2 = cacheProxy.cache(service1);

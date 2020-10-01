@@ -2,10 +2,10 @@ package classesImp;
 
 import interfaces.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class ServiceImp implements Service {
     @Override
@@ -20,16 +20,15 @@ public class ServiceImp implements Service {
 
     @Override
     public List<String> run(String str, String item, int value, Date date) {
-        List<String> list = new ArrayList<>(value);
-        for (int i = 0; i < value; i++) {
-            list.add(item);
-        }
+        IntStream si = IntStream.range(0, value);
+        Stream<String> ss = si.mapToObj(n-> item + n);
+        List<String> ls = ss.collect(Collectors.toList());
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return list;
+        return ls;
     }
 
     @Override
