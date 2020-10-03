@@ -1,18 +1,23 @@
 package tribonachi;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import java.util.function.IntUnaryOperator;
-import java.util.function.UnaryOperator;
+public class Tribonachi {
 
-public class Tribonachi implements IntUnaryOperator {
-    private final int a1 = (int)Math.round(Math.pow(19+3*Math.pow(33, 2), 3));
-    private final int a2 = (int)Math.round(Math.pow(19-3*Math.pow(33, 2), 3));
-    private final int b = (int)Math.round(Math.pow(586+102*Math.pow(33, 2), 3));
-
-    public Tribonachi() {
+    public static List<Integer> getNumber(int number) {
+        Stream<int[]> stream = Stream.iterate(new int[] {0,0,1}, n->new int[] {n[1], n[2], n[2] + n[1] + n[0]}).limit(number);
+//        stream.forEach(n -> System.out.println("{" + n[0] + ", " + n[1] +  ", " + n[2] + "}"));
+        return stream.map(n -> n[0]).collect(Collectors.toList());
     }
 
-    @Override
-    public int applyAsInt(int operand) {
-        return (int)Math.round(3*b*(Math.pow((a1+a2+1)/3, operand))/(b*b-2*b+4));
+    public static void main(String[] args) {
+        getNumber(1).forEach(System.out::println);
+        System.out.println();
+        getNumber(2).forEach(System.out::println);
+        System.out.println();
+        getNumber(3).forEach(System.out::println);
+        System.out.println();
+        getNumber(13).forEach(System.out::println);
     }
 }
