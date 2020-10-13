@@ -27,9 +27,9 @@ public class ScalableThreadPool implements ThreadPool {
     public void stop() {
         isRun = false;
     }
-
+//запуск основных потоков, выполняющих задачи из очереди
     private void startPrimaryThread(int count) {
-        for (int i = 0; i < count; i++) {
+        for (int i = 1; i < count+1; i++) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -43,7 +43,7 @@ public class ScalableThreadPool implements ThreadPool {
             thread.start();
         }
     }
-
+//старт вспомогательного потока, который который запускает дополнительные потоки при наличии задач в очереди
     private void startAdditionalThread(int count) {
         new Thread(new Runnable() {
             @Override
