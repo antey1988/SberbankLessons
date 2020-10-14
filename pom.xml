@@ -19,6 +19,7 @@
         <module>lesson9_Cache</module>
         <module>lesson10_Lambda</module>
         <module>lesson11_12_Thread</module>
+        <module>lesson13_JMM</module>
         <!--        <module>Friends</module>-->
     </modules>
 
