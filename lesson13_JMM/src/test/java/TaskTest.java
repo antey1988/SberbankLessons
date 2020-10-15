@@ -1,4 +1,6 @@
 import org.junit.Test;
+import task.Task;
+
 import java.util.concurrent.*;
 
 public class TaskTest {
