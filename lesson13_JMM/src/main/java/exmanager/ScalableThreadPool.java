@@ -15,9 +15,9 @@ public class ScalableThreadPool {
     private final BlockingQueue<Runnable> queueTask;//очередь задач
     private final CopyOnWriteArraySet<Thread> activeThread;//реестр запущенных потоков
 
-    private final AtomicInteger completedTaskCount = new AtomicInteger();
-    private final AtomicInteger failedTaskCount = new AtomicInteger();
-    private final AtomicInteger interruptedTaskCount = new AtomicInteger();
+    private volatile AtomicInteger completedTaskCount = new AtomicInteger();
+    private volatile AtomicInteger failedTaskCount = new AtomicInteger();
+    private volatile AtomicInteger interruptedTaskCount = new AtomicInteger();
 
     private final Object lock = new Object();
 
@@ -34,25 +34,19 @@ public class ScalableThreadPool {
         return completedTaskCount;
     }
     public void incrementCompletedTaskCount() {
-        synchronized (lock) {
-            completedTaskCount.incrementAndGet();
-        }
+        completedTaskCount.incrementAndGet();
     }
     public AtomicInteger getCurrentFailedTaskCount() {
         return failedTaskCount;
     }
     public void incrementFailedTaskCount() {
-        synchronized (lock) {
-            failedTaskCount.incrementAndGet();
-        }
+        failedTaskCount.incrementAndGet();
     }
     public AtomicInteger getCurrentInterruptedTaskCount() {
         return interruptedTaskCount;
     }
     public void incrementInterruptedTaskCount() {
-        synchronized (lock) {
-            interruptedTaskCount.incrementAndGet();
-        }
+        System.out.println("" + namePool + " 1 : "  + interruptedTaskCount.incrementAndGet());
     }
 
     public ScalableThreadPool(String namePool, int minCountThread, int maxCountThread) {
@@ -65,9 +59,7 @@ public class ScalableThreadPool {
 
     public void shutdown() {
         activeThread.forEach(Thread::interrupt);
-        synchronized (lock) {
-            interruptedTaskCount.addAndGet(queueTask.size());
-        }
+        System.out.println("" + namePool + " 2 : "  + interruptedTaskCount.addAndGet(queueTask.size()));
     }
     //запуск основных потоков, работающие постоянно
     private void startPrimaryThread(int count) {
