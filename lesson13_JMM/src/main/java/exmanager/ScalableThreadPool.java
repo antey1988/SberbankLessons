@@ -9,15 +9,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScalableThreadPool {
     private final String namePool;
-    private final AtomicInteger currentCountAdditionaThread = new AtomicInteger();
+    private final AtomicInteger currentCountAdditionaThread = new AtomicInteger();//текущее количество запущенных дополнительных потоков
     private final int minCountThread;
     private final int maxCountThread;
-    private final BlockingQueue<Runnable> queueTask;
-    private final CopyOnWriteArraySet<Thread> activeThread;
+    private final BlockingQueue<Runnable> queueTask;//очередь задач
+    private final CopyOnWriteArraySet<Thread> activeThread;//реестр запущенных потоков
 
     private final AtomicInteger completedTaskCount = new AtomicInteger();
     private final AtomicInteger failedTaskCount = new AtomicInteger();
     private final AtomicInteger interruptedTaskCount = new AtomicInteger();
+
+    private final Object lock = new Object();
 
 
     public ScalableThreadPool(String name) {
@@ -31,11 +33,26 @@ public class ScalableThreadPool {
     public AtomicInteger getCurrentCompletedTaskCount() {
         return completedTaskCount;
     }
+    public void incrementCompletedTaskCount() {
+        synchronized (lock) {
+            completedTaskCount.incrementAndGet();
+        }
+    }
     public AtomicInteger getCurrentFailedTaskCount() {
         return failedTaskCount;
     }
+    public void incrementFailedTaskCount() {
+        synchronized (lock) {
+            failedTaskCount.incrementAndGet();
+        }
+    }
     public AtomicInteger getCurrentInterruptedTaskCount() {
         return interruptedTaskCount;
+    }
+    public void incrementInterruptedTaskCount() {
+        synchronized (lock) {
+            interruptedTaskCount.incrementAndGet();
+        }
     }
 
     public ScalableThreadPool(String namePool, int minCountThread, int maxCountThread) {
@@ -48,7 +65,9 @@ public class ScalableThreadPool {
 
     public void shutdown() {
         activeThread.forEach(Thread::interrupt);
-        interruptedTaskCount.addAndGet(queueTask.size());
+        synchronized (lock) {
+            interruptedTaskCount.addAndGet(queueTask.size());
+        }
     }
     //запуск основных потоков, работающие постоянно
     private void startPrimaryThread(int count) {
@@ -60,6 +79,7 @@ public class ScalableThreadPool {
                     if (runnable != null)
                         runnable.run();
                 }
+                activeThread.remove(Thread.currentThread());
             }, "Pool (" + namePool + ") - Thread (Primary thread № " + i + ")");
             thread.start();
         }
@@ -83,6 +103,7 @@ public class ScalableThreadPool {
                         }
                     }
                 }
+                activeThread.remove(Thread.currentThread());
             }, namePool + " pool - Service thread");
             thread.start();
     }

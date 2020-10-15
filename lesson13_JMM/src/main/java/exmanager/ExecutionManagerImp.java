@@ -26,9 +26,9 @@ public class ExecutionManagerImp implements ExecutionManager{
             Arrays.stream(tasks).forEach(task-> threadPoolContext.execute(()->{
                 try {
                     task.run();
-                    threadPoolContext.getCurrentCompletedTaskCount().incrementAndGet();
+                    threadPoolContext.incrementCompletedTaskCount();
                 } catch (Exception e) {
-                    threadPoolContext.getCurrentFailedTaskCount().incrementAndGet();
+                    threadPoolContext.incrementFailedTaskCount();
                 } finally {
                     cdl.countDown();
                 }
@@ -37,12 +37,12 @@ public class ExecutionManagerImp implements ExecutionManager{
                 try {
                     cdl.await();
                     callback.run();
-                    threadPoolContext.getCurrentCompletedTaskCount().incrementAndGet();
+                    threadPoolContext.incrementCompletedTaskCount();
                 } catch (InterruptedException e) {
-                    threadPoolContext.getCurrentInterruptedTaskCount().incrementAndGet();
+                    threadPoolContext.incrementInterruptedTaskCount();
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    threadPoolContext.getCurrentFailedTaskCount().incrementAndGet();
+                    threadPoolContext.incrementFailedTaskCount();
                 }
             });
         });
