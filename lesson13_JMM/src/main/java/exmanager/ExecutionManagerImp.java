@@ -23,7 +23,7 @@ public class ExecutionManagerImp implements ExecutionManager{
     @Override
     public Context execute(Runnable callback, Runnable... tasks) {
         //пул потоков выполняещий задачи конкретного контекста
-        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + ++numberContext + " call Context", 5);
+        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + ++numberContext + " call Context", 0,5);
 
         Context context = new ContextImp(tasks.length+1, threadPoolContext);
         //защелка, отслежиает заверщение всех задач из массива tasks

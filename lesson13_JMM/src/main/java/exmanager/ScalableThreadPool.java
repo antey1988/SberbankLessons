@@ -10,7 +10,7 @@ public class ScalableThreadPool {
     private final AtomicInteger currentCountAdditionaThread = new AtomicInteger();//счетчик запущенных дополнительных потоков
     private final int minCountThread; //минимальное количество потоков в пуле (основые потоки, запускаются сразу при старте пула)
     private final int maxCountThread; //максимальное количество потоков в пуле (дополнительные потоки запускаются при наличии задач и занятых основных)
-    private final Queue<Runnable> queueTask;//очередь задач
+    private final BlockingQueue<Runnable> queueTask;//очередь задач
     private final Set<Thread> activeThread;//реестр запущенных потоков, используется для останвки пула по команде shutdown()
 
     private final AtomicInteger completedTaskCount = new AtomicInteger(); //счетчик успешно завершенных задач
@@ -29,7 +29,7 @@ public class ScalableThreadPool {
         this.namePool = namePool;
         this.minCountThread = minCountThread;
         this.maxCountThread = maxCountThread;
-        this.queueTask = new ConcurrentLinkedQueue<>();
+        this.queueTask = new LinkedBlockingQueue<>();
         this.activeThread = new CopyOnWriteArraySet<>();
     }
 
@@ -74,9 +74,13 @@ public class ScalableThreadPool {
             Thread thread = new Thread(() -> {
                 activeThread.add(Thread.currentThread()); //регистрация в реесте активных потоков
                 while (!Thread.currentThread().isInterrupted()) {
-                    Runnable runnable = queueTask.poll(); //извлечение задачи из очереди
-                    if (runnable != null) //если задача была
-                        runnable.run();   //запускает ее
+                    Runnable runnable;
+                    try {
+                        runnable = queueTask.take(); //извлечение задачи из очереди
+                        runnable.run();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
                 activeThread.remove(Thread.currentThread()); //удаляемся из реестра
             }, "Pool (" + namePool + ") - Thread (Primary thread № " + i + ")");
@@ -90,16 +94,20 @@ public class ScalableThreadPool {
                 activeThread.add(Thread.currentThread());//регистрация в реесте активных потоков
                 while (!Thread.currentThread().isInterrupted()) {
                     if (currentCountAdditionaThread.intValue() < maxCountAdditionaThread) { //проверка на "наличие" дополнительных потоков
-                        Runnable runnable = queueTask.poll();//извлечение задачи из очереди
-                        if (runnable != null) {
+//                        Runnable runnable = queueTask.poll();//извлечение задачи из очереди
+                        Runnable runnable;
+                        try {
+                            runnable = queueTask.take(); //извлечение задачи из очереди
                             currentCountAdditionaThread.getAndIncrement(); //инкремент счетчика дополнительных потоков
                             Thread thread1 = new Thread(() -> { //дополнительный поток
                                 activeThread.add(Thread.currentThread());//регистрация в реесте активных потоков
                                 runnable.run();
                                 currentCountAdditionaThread.decrementAndGet(); //дикремент счетчика дополнительных потоков
                                 activeThread.remove(Thread.currentThread());//удаляемся из реестра
-                            }, "Pool (" + namePool + ") - Thread (Additional thread №" + currentCountAdditionaThread + ")");
+                            }, "Pool (" + namePool + ") - Thread (Additional thread)");
                             thread1.start();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }

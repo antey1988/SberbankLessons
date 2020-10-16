@@ -34,7 +34,7 @@ public class ExecutionManagerTest {
         Context context2 = executionManager.execute(secondCallback,secondGroupTask);
         Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
 
-        sleepMain(2);
+        sleepMain(4);
 //        sleepMain(2);
         context1.interrupt();
         sleepMain(2);
