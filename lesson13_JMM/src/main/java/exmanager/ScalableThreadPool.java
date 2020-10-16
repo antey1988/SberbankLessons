@@ -56,7 +56,7 @@ public class ScalableThreadPool {
     //инкрементирует счетчик прерванных задач
     public void incrementInterruptedTaskCount() {
         int count = interruptedTaskCount.incrementAndGet();
-        System.out.println("Количество прерванных задач из потока в пуле потоков (" + namePool + "): "  + count);
+//        System.out.println("Количество прерванных задач из потока в пуле потоков (" + namePool + "): "  + count);
     }
 
 
@@ -66,7 +66,7 @@ public class ScalableThreadPool {
         activeThread.forEach(Thread::interrupt);
         //увеличиваем значение счетчика прерванных задач на количество задач, оставшихся в очереди
         int count = interruptedTaskCount.addAndGet(queueTask.size());
-        System.out.println("Количество прерванных задач из очереди в пуле потоков (" + namePool + "): "  + count);
+//        System.out.println("Количество прерванных задач из очереди в пуле потоков (" + namePool + "): "  + count);
     }
     //запуск основных потоков, работающие постоянно
     private void startPrimaryThread(int count) {

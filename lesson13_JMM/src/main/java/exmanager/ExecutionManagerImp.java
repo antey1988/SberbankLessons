@@ -4,8 +4,9 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class ExecutionManagerImp implements ExecutionManager{
-    private final ScalableThreadPool threadPoolManager;//пул менеджера, запускает задачи вызовов метода execute()
+    private final ScalableThreadPool threadPoolManager;//пул менеджера, запускает задачу создания Context при каждом вызове метода execute()
     private static int numberContext = 0; //номер последнего вызова метода execute()
+
 
     public ExecutionManagerImp(ScalableThreadPool threadPoolManager) {
         this.threadPoolManager = threadPoolManager;
