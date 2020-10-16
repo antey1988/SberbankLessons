@@ -27,7 +27,7 @@ public class ExecutionManagerImp implements ExecutionManager{
         Context context = new ContextImp(tasks.length+1, threadPoolContext);
         //защелка, отслежиает заверщение всех задач из массива tasks
         CountDownLatch cdl = new CountDownLatch(tasks.length);
-        threadPoolManager.execute(()->{//в пул менеджера добавляется задача, суть которой "закинуть все задачи callback and tasks в пул Контекства
+        threadPoolManager.execute(()->{//в пул менеджера добавляется задача, суть которой "закинуть все задачи callback and tasks в пул Контекста,
                                         //добавив в них дополнительные проверки
             Arrays.stream(tasks).forEach(task-> threadPoolContext.execute(()->{
                 try {
