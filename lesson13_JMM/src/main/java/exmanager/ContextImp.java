@@ -14,17 +14,17 @@ public class ContextImp implements Context {
 
     @Override
     public int getCompletedTaskCount() {
-        return threadPool.getCurrentCompletedTaskCount().get();
+        return threadPool.getCurrentCompletedTaskCount();
     }
 
     @Override
     public int getFailedTaskCount() {
-        return threadPool.getCurrentFailedTaskCount().get();
+        return threadPool.getCurrentFailedTaskCount();
     }
 
     @Override
     public int getInterruptedTaskCount() {
-        return threadPool.getCurrentInterruptedTaskCount().get();
+        return threadPool.getCurrentInterruptedTaskCount();
     }
 
     @Override

@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class ExecutionManagerImp implements ExecutionManager{
-    private final ScalableThreadPool threadPoolManager;
-    private static int numberContext = 1;
+    private final ScalableThreadPool threadPoolManager;//пул менеджера, запускает задачи вызовов метода execute()
+    private static int numberContext = 0; //номер последнего вызова метода execute()
 
     public ExecutionManagerImp(ScalableThreadPool threadPoolManager) {
         this.threadPoolManager = threadPoolManager;
@@ -13,43 +13,50 @@ public class ExecutionManagerImp implements ExecutionManager{
     }
 
     public ExecutionManagerImp(){
-        this(new ScalableThreadPool("Starting Contexts", 1,1));
+        this(new ScalableThreadPool("Starting Contexts", 1));
     }
 
+    //возвращаемое значение объект типа Context,
+    //при каждом вызове данного метода создается новый обект,
+    //через который можно узнать состояние выполнения группы задач
     @Override
     public Context execute(Runnable callback, Runnable... tasks) {
-        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + numberContext++ + " call Context", 5,8);
-        Context context = new ContextImp(tasks.length+1, threadPoolContext);
+        //пул потоков выполняещий задачи конкретного контекста
+        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + ++numberContext + " call Context", 5);
 
+        Context context = new ContextImp(tasks.length+1, threadPoolContext);
+        //защелка, отслежиает заверщение всех задач из массива tasks
         CountDownLatch cdl = new CountDownLatch(tasks.length);
-        threadPoolManager.execute(()->{
+        threadPoolManager.execute(()->{//в пул менеджера добавляется задача, суть которой "закинуть все задачи callback and tasks в пул Контекства
+                                        //добавив в них дополнительные проверки
             Arrays.stream(tasks).forEach(task-> threadPoolContext.execute(()->{
                 try {
-                    task.run();
-                    threadPoolContext.incrementCompletedTaskCount();
+                    task.run(); //запускаем задачу в пуле Контекста
+                    threadPoolContext.incrementCompletedTaskCount(); //в случае успешного завершения увеличиваем счетчик "Успешный задач"
                 } catch (Exception e) {
-                    threadPoolContext.incrementFailedTaskCount();
+                    threadPoolContext.incrementFailedTaskCount(); //в случае ошибки - счетчик "Безуспешных задач"
                 } finally {
-                    cdl.countDown();
+                    cdl.countDown(); //уменьшаем значение "защелки"
                 }
             }));
             threadPoolContext.execute(()->{
                 try {
-                    cdl.await();
-                    callback.run();
-                    threadPoolContext.incrementCompletedTaskCount();
+                    cdl.await(); //ожидаение пока "защелка" не обнулиться,
+                    callback.run(); //после запускаем задачу callback
+                    threadPoolContext.incrementCompletedTaskCount(); //в случае успешного завершения увеличиваем счетчик "Успешный задач"
                 } catch (InterruptedException e) {
-                    threadPoolContext.incrementInterruptedTaskCount();
+                    threadPoolContext.incrementInterruptedTaskCount(); //в случае запроса на прерывание по команде shutdown(),
+  //ЗДЕСЬ НЕ ПОНЯТНАЯ СИТУАЦИЯ                                                                      //увеличиваем счетчик прерванных задач
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
-                    threadPoolContext.incrementFailedTaskCount();
+                    threadPoolContext.incrementFailedTaskCount(); //в случае ошибки - счетчик "Безуспешных задач"
                 }
             });
         });
 
         return context;
     }
-
+    //остановка пула Менеджера
     @Override
     public void shutdown() {
         threadPoolManager.shutdown();
