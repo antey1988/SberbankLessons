@@ -15,10 +15,11 @@ public class SleepTask implements Runnable {
     public void run() {
         try {
             TimeUnit.MILLISECONDS.sleep(time);
-            System.out.println(name + ", starting in thread: "
-                    + Thread.currentThread().getName() + ", ended later " + time + " milliseconds");
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        System.out.println(name + ", starting in thread: "
+                + Thread.currentThread().getName() + ", ended later " + time + " milliseconds");
     }
 }

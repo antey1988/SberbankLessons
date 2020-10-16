@@ -41,7 +41,7 @@ public class ExecutionManagerImp implements ExecutionManager{
             }));
             threadPoolContext.execute(()->{
                 try {
-                    cdl.await(); //ожидаение пока "защелка" не обнулиться,
+                    cdl.await(); //ожидаение пока "защелка" не обнулится,
                     callback.run(); //после запускаем задачу callback
                     threadPoolContext.incrementCompletedTaskCount(); //в случае успешного завершения увеличиваем счетчик "Успешный задач"
                 } catch (InterruptedException e) {
