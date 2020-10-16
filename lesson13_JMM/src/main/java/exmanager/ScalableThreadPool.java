@@ -1,8 +1,8 @@
 package exmanager;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScalableThreadPool {
@@ -10,8 +10,8 @@ public class ScalableThreadPool {
     private final AtomicInteger currentCountAdditionaThread = new AtomicInteger();//счетчик запущенных дополнительных потоков
     private final int minCountThread; //минимальное количество потоков в пуле (основые потоки, запускаются сразу при старте пула)
     private final int maxCountThread; //максимальное количество потоков в пуле (дополнительные потоки запускаются при наличии задач и занятых основных)
-    private final BlockingQueue<Runnable> queueTask;//очередь задач
-    private final CopyOnWriteArraySet<Thread> activeThread;//реестр запущенных потоков, используется для останвки пула по команде shutdown()
+    private final Queue<Runnable> queueTask;//очередь задач
+    private final Set<Thread> activeThread;//реестр запущенных потоков, используется для останвки пула по команде shutdown()
 
     private final AtomicInteger completedTaskCount = new AtomicInteger(); //счетчик успешно завершенных задач
     private final AtomicInteger failedTaskCount = new AtomicInteger(); //счетчик задач, завершенных с ошибкой
@@ -29,7 +29,7 @@ public class ScalableThreadPool {
         this.namePool = namePool;
         this.minCountThread = minCountThread;
         this.maxCountThread = maxCountThread;
-        this.queueTask = new LinkedBlockingQueue<>();
+        this.queueTask = new ConcurrentLinkedQueue<>();
         this.activeThread = new CopyOnWriteArraySet<>();
     }
 
