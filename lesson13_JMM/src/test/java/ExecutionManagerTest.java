@@ -32,19 +32,19 @@ public class ExecutionManagerTest {
 
         Context context1 = executionManager.execute(firstCallback,firstGroupTask);
         Context context2 = executionManager.execute(secondCallback,secondGroupTask);
-        Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
+//        Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
 
-        sleepMain(4);
+        sleepMain(2);
 //        sleepMain(2);
         context1.interrupt();
         sleepMain(2);
         context2.interrupt();
         sleepMain(2);
-        context3.interrupt();
+//        context3.interrupt();
         sleepMain(1);
         checkContext(context1);
         checkContext(context2);
-        checkContext(context3);
+//        checkContext(context3);
         executionManager.shutdown();
         Assert.assertNotEquals(COUNTTASKS_1,
                 context1.getCompletedTaskCount() + context1.getFailedTaskCount() + context1.getInterruptedTaskCount());
@@ -58,7 +58,7 @@ public class ExecutionManagerTest {
                     Runnable runnable;
                     if ((int)(count * Math.random() + 1)  >= count/5)
                         //задачи проснуться через определенное время
-                        runnable = new SleepTask(1000 + (int)(Math.random()*1000), "" + groupName + " Tasks (task sleep #" + t + ")");
+                        runnable = new SleepTask(500 + (int)(Math.random()*500), "" + groupName + " Tasks (task sleep #" + t + ")");
                     else
                         //задачи, бросающие ошибки
                         runnable = new ExceptionTask("" + groupName + " Tasks (task exception #" + t + ")");

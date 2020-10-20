@@ -10,7 +10,7 @@ public class ExecutionManagerImp implements ExecutionManager{
 
     public ExecutionManagerImp(ScalableThreadPool threadPoolManager) {
         this.threadPoolManager = threadPoolManager;
-        this.threadPoolManager.start();
+        this.threadPoolManager.startPool();
     }
 
     public ExecutionManagerImp(){

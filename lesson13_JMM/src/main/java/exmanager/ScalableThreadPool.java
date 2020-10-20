@@ -1,6 +1,5 @@
 package exmanager;
 
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +11,7 @@ public class ScalableThreadPool {
     private final int maxCountThread; //максимальное количество потоков в пуле (дополнительные потоки запускаются при наличии задач и занятых основных)
     private final BlockingQueue<Runnable> queueTask;//очередь задач
     private final Set<Thread> activeThread;//реестр запущенных потоков, используется для останвки пула по команде shutdown()
+    private volatile boolean isShutdown;//флаг остановки пула, сигнализирует основным и сервисному потоку об остановке создания при старте
 
     private final AtomicInteger completedTaskCount = new AtomicInteger(); //счетчик успешно завершенных задач
     private final AtomicInteger failedTaskCount = new AtomicInteger(); //счетчик задач, завершенных с ошибкой
@@ -31,6 +31,7 @@ public class ScalableThreadPool {
         this.maxCountThread = maxCountThread;
         this.queueTask = new LinkedBlockingQueue<>();
         this.activeThread = new CopyOnWriteArraySet<>();
+        this.isShutdown = false;
     }
 
     //возвращает количество успешно завершенных задач
@@ -56,33 +57,38 @@ public class ScalableThreadPool {
     //инкрементирует счетчик прерванных задач
     public void incrementInterruptedTaskCount() {
         int count = interruptedTaskCount.incrementAndGet();
-//        System.out.println("Количество прерванных задач из потока в пуле потоков (" + namePool + "): "  + count);
+        System.out.println("Количество прерванных задач из потока в пуле потоков (" + namePool + "): "  + count);
     }
 
 
 
-    public void shutdown() {
+    public synchronized void shutdown() {
+        //выставляем флаг остановки пула
+        isShutdown = true;
         //выставляем флаги прерывания у всех активных потоков
         activeThread.forEach(Thread::interrupt);
         //увеличиваем значение счетчика прерванных задач на количество задач, оставшихся в очереди
         int count = interruptedTaskCount.addAndGet(queueTask.size());
-//        System.out.println("Количество прерванных задач из очереди в пуле потоков (" + namePool + "): "  + count);
+        System.out.println("Количество прерванных задач из очереди в пуле потоков (" + namePool + "): "  + count);
     }
     //запуск основных потоков, работающие постоянно
     private void startPrimaryThread(int count) {
         for (int i = 1; i < count+1; i++) {
+            if (isShutdown)
+                break;
             Thread thread = new Thread(() -> {
-                activeThread.add(Thread.currentThread()); //регистрация в реесте активных потоков
-                while (!Thread.currentThread().isInterrupted()) {
-                    Runnable runnable;
-                    try {
-                        runnable = queueTask.take(); //извлечение задачи из очереди
-                        runnable.run();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
+                if (registrationThread(Thread.currentThread())) {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        Runnable runnable;
+                        try {
+                            runnable = queueTask.take(); //извлечение задачи из очереди
+                            runnable.run();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
+                    activeThread.remove(Thread.currentThread()); //удаляемся из реестра
                 }
-                activeThread.remove(Thread.currentThread()); //удаляемся из реестра
             }, "Pool (" + namePool + ") - Thread (Primary thread № " + i + ")");
             thread.start();
         }
@@ -91,32 +97,35 @@ public class ScalableThreadPool {
     private void startAdditionalThread(int maxCountAdditionaThread) {
             Thread thread = new Thread(() -> {  //сервесный поток, который будет запускать дополнительные потоки
                                                 // при наличии задач в очереди и занятых основных потоков
-                activeThread.add(Thread.currentThread());//регистрация в реесте активных потоков
-                while (!Thread.currentThread().isInterrupted()) {
-                    if (currentCountAdditionaThread.intValue() < maxCountAdditionaThread) { //проверка на "наличие" дополнительных потоков
+                if (registrationThread(Thread.currentThread())) {
+                    while (!Thread.currentThread().isInterrupted()) {
+                        if (currentCountAdditionaThread.intValue() < maxCountAdditionaThread) { //проверка на "наличие" дополнительных потоков
 //                        Runnable runnable = queueTask.poll();//извлечение задачи из очереди
-                        Runnable runnable;
-                        try {
-                            runnable = queueTask.take(); //извлечение задачи из очереди
-                            currentCountAdditionaThread.getAndIncrement(); //инкремент счетчика дополнительных потоков
-                            Thread thread1 = new Thread(() -> { //дополнительный поток
-                                activeThread.add(Thread.currentThread());//регистрация в реесте активных потоков
-                                runnable.run();
-                                currentCountAdditionaThread.decrementAndGet(); //дикремент счетчика дополнительных потоков
-                                activeThread.remove(Thread.currentThread());//удаляемся из реестра
-                            }, "Pool (" + namePool + ") - Thread (Additional thread)");
-                            thread1.start();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                            Runnable runnable;
+                            try {
+                                runnable = queueTask.take(); //извлечение задачи из очереди
+                                currentCountAdditionaThread.getAndIncrement(); //инкремент счетчика дополнительных потоков
+                                Thread thread1 = new Thread(() -> { //дополнительный поток
+                                    if (registrationThread(Thread.currentThread())) {
+                                        runnable.run();
+                                        currentCountAdditionaThread.decrementAndGet(); //декремент счетчика дополнительных потоков
+                                        activeThread.remove(Thread.currentThread());//удаляемся из реестра
+                                    } else
+                                        incrementInterruptedTaskCount();
+                                }, "Pool (" + namePool + ") - Thread (Additional thread)");
+                                thread1.start();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                            }
                         }
                     }
+                    activeThread.remove(Thread.currentThread());//удаляемся из реестра
                 }
-                activeThread.remove(Thread.currentThread());//удаляемся из реестра
             }, "Pool (" + namePool + ") - Thread (Service thread");
             thread.start();
     }
     //запуск пула
-    public void start() {
+    public void startPool() {
         if (minCountThread >= 0) {
             startPrimaryThread(minCountThread);
             int countAdditionalThread = maxCountThread - minCountThread;
@@ -127,5 +136,16 @@ public class ScalableThreadPool {
     //добавление задачи в очередь
     public void execute(Runnable runnable) {
         queueTask.offer(runnable);
+    }
+
+    //регистрация в реесте активных потоков, если не пришла команда об остановке пула
+    private boolean registrationThread(Thread thread) {
+        synchronized (activeThread) {
+            if (!isShutdown) {
+                activeThread.add(thread);
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -9,7 +9,7 @@ public class ContextImp implements Context {
     public ContextImp(int fullCount, ScalableThreadPool threadPool) {
         this.fullCount = fullCount;
         this.threadPool = threadPool;
-        this.threadPool.start();
+        this.threadPool.startPool();
     }
 
     @Override
