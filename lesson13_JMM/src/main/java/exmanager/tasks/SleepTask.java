@@ -22,4 +22,9 @@ public class SleepTask implements Runnable {
         System.out.println(name + ", starting in thread: "
                 + Thread.currentThread().getName() + ", ended later " + time + " milliseconds");
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

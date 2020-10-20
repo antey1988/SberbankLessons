@@ -34,7 +34,7 @@ public class ExecutionManagerTest {
         Context context2 = executionManager.execute(secondCallback,secondGroupTask);
 //        Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
 
-        sleepMain(2);
+        sleepMain(1);
 //        sleepMain(2);
         context1.interrupt();
         sleepMain(2);
@@ -46,6 +46,7 @@ public class ExecutionManagerTest {
         checkContext(context2);
 //        checkContext(context3);
         executionManager.shutdown();
+
         Assert.assertNotEquals(COUNTTASKS_1,
                 context1.getCompletedTaskCount() + context1.getFailedTaskCount() + context1.getInterruptedTaskCount());
         Assert.assertEquals(COUNTTASKS_1+1,

@@ -47,6 +47,7 @@ public class ExecutionManagerImp implements ExecutionManager{
                     threadPoolContext.incrementCompletedTaskCount(); //в случае успешного завершения увеличиваем счетчик "Успешный задач"
                 } catch (InterruptedException e) {
                     threadPoolContext.incrementInterruptedTaskCount(); //в случае запроса на прерывание по команде shutdown(),
+                    threadPoolContext.addInterruptedTask(callback);
   //ЗДЕСЬ НЕ ПОНЯТНАЯ СИТУАЦИЯ                                                                      //увеличиваем счетчик прерванных задач
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {

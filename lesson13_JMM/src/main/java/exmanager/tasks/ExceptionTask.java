@@ -13,4 +13,9 @@ public class ExceptionTask implements Runnable{
                 + Thread.currentThread().getName() + ", ended with fail");
         throw new RuntimeException();
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
