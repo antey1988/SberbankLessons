@@ -28,4 +28,6 @@ public class PerformanceProxy implements InvocationHandler {
         }
         return method.invoke(calculator, args);
     }
+
+
 }

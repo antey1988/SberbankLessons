@@ -12,8 +12,8 @@ public interface Service {
     String printStringInteger(String string, int n);
 
     @Metric
-    @Cache(identityBy = {String.class, String.class, int.class}, sizeList = 5, type = TypeCache.IN_FILE)
-    List<String> run(String str, String item, int value, Date date);
+    @Cache(identityBy = {String.class}, sizeList = 10, type = TypeCache.IN_MEMORY)
+    List<String> run(String item, int value, Date date);
 
     List<String> work(String item);
 }
