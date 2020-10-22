@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CacheTest {
-    final int allCountReqest = 10;
-    final int deferentCountReqest = 5;
+    final int allCountReqest = 1000;
+    final int deferentCountReqest = 6;
     Service service, service1, service2;
     String rootDir;
     CacheProxy cacheProxy;

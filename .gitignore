@@ -3,6 +3,6 @@
 /workspace.xml
 *.class
 target/
-src/main/resources/**/*.txt
+*.txt
 *.iml
 .idea/
