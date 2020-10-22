@@ -7,33 +7,31 @@ import exceptions.NotValidTypeIdentityException;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CacheProxy implements InvocationHandler {
-
-    private Object proxyObject;
+    //проксируемый объект
+    private volatile Object proxyObject;
+    //мапа в которой храняться кэши в разрезе методов и набора аргументов
     private final Map<String, Map<Integer, Object>> cacheValuesAllMethods = new ConcurrentHashMap<>();
+    //мапа в которой храняться файлы с кэшированными значениями в разрезе методов и набора аргументов
     private final Map<String, Map<Integer, File>> filesAllMethods = new ConcurrentHashMap<>();
+    //счетчики вызовов методов и реальных вычислений
     private final Map<String, AtomicInteger[]> countReqestAndCache = new ConcurrentHashMap<>();
+    //корневая директория в которой храятся файлы сериализованных расчетов
     private final String rootDirectory;
-//    private final boolean toDir;
 
-    public CacheProxy(String rootDirectory, boolean toDir) {
+    public CacheProxy(String rootDirectory) {
         this.rootDirectory = rootDirectory;
-//        this.toDir = toDir;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-//        System.out.println("Прокси-объект " + proxyObject);
         Cache cacheAnnotation = null;
-
+        //поиск аннотации у метода
         Annotation[] annotations = method.getAnnotations();
         for (Annotation annotation : annotations) {
             if (annotation instanceof Cache) {
@@ -41,27 +39,23 @@ public class CacheProxy implements InvocationHandler {
                 break;
             }
         }
-
+        //если аннотация отсутсвует вызываем метод проксируемого объекта
         if (cacheAnnotation == null)
              return method.invoke(proxyObject, args);
-
-
+        //извлекаем кэш из памяти или файловой системы в зависимости от указанного значения в аннотации
         Object result;
         if (cacheAnnotation.type() == TypeCache.IN_MEMORY)
             result = cacheFromMemory(method, args, cacheAnnotation);
         else
             result = cacheFromFile(method, args, cacheAnnotation);
 
-        return  result;
+        return result;
     }
 
 //      извлечение кэша из оперативной памяти, если он там присутствует,
 //      в случае отсутствия кэша - выполняется стандартный метод
 //      полученное значение сохраняется в кэше
     private Object cacheFromMemory(Method method, Object[] args, Cache cacheAnnotation) {
-//        Object result;
-//      генерация уникального ключа поиска кеша
-        String key;
 //      Формируем имя таблицы, хранящей кэша конкретного метода
         String prefix = cacheAnnotation.namePrefix();
         if (prefix.equals(""))
@@ -72,8 +66,8 @@ public class CacheProxy implements InvocationHandler {
         try {
             postfix = generateHash(args, identityBy);
         } catch (IdentityException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException();
+//            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
         //пытаемся получить мапу кэшей для конкретного метода, если отсутствует создаем новую
         //в этот момент остальные потоки будут ждать разблокировки и получат созданную мапу
@@ -86,12 +80,12 @@ public class CacheProxy implements InvocationHandler {
         //метода  проксируемого объекта
         Object result = cacheValuesMethod.computeIfAbsent(postfix,
                 k -> {
-                    Object res = null;
+                    Object res;
                     try {
                         res = method.invoke(proxyObject, args);
                         count[1].incrementAndGet();
                     } catch (IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
 //              проверка типа возвращаемого значения: коллекция или нет
                     Class<?> returnType = method.getReturnType();
@@ -105,21 +99,19 @@ public class CacheProxy implements InvocationHandler {
         return result;
     }
 
-    private Object cacheFromFile(Method method, Object[] args, Cache cacheAnnotation)
-            throws InvocationTargetException, IllegalAccessException {
-        Object result;
-//      Формируем префикс имени файла либо имени каталога
+    private Object cacheFromFile(Method method, Object[] args, Cache cacheAnnotation) {
+//      Формируем имя каталога метода
         String prefix = cacheAnnotation.namePrefix();
         if (prefix.equals(""))
             prefix = method.getName();
-//      Формируем постфикс имени файла либо имя файла в зависимости от заданной "маски"
+//      Формируем  имя файла в зависимости от заданной "маски"
         Class<?>[] identityBy = cacheAnnotation.identityBy();
         int postfix;
         try {
             postfix = generateHash(args, identityBy);
         } catch (IdentityException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException();
+//            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
 
         Map<Integer, File> filesMethod = filesAllMethods.computeIfAbsent(prefix, k -> new ConcurrentHashMap<>());
@@ -133,6 +125,8 @@ public class CacheProxy implements InvocationHandler {
         });
         AtomicInteger[] count = countReqestAndCache.computeIfAbsent(prefix, k ->
                 new AtomicInteger[] {new AtomicInteger(), new AtomicInteger()});
+
+        Object result;
         synchronized (filename) {
             try {
                 InputStream fis = new FileInputStream(filename);
@@ -144,24 +138,26 @@ public class CacheProxy implements InvocationHandler {
                     result = ((List) result).subList(0, size);
                 }
                 count[0].incrementAndGet();
-                return result;
             } catch (FileNotFoundException e) {
-
                 try (OutputStream fos = new FileOutputStream(filename)) {
                     result = method.invoke(proxyObject, args);
                     ObjectOutputStream oos = new ObjectOutputStream(fos);
                     oos.writeObject(result);
                     count[0].incrementAndGet();
                     count[1].incrementAndGet();
-                    return result;
-                } catch (IOException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
+                } catch (IOException ex) {
+                    throw new RuntimeException("Файл не доступен для записи. Не удачная попытка сериализовать объект");
+                } catch (IllegalAccessException | InvocationTargetException ex) {
+                    throw new RuntimeException(e);
                 }
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException("Файл не доступен для чтения. Не удачная попытка десериализовать объект");
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(
+                        String.format("Невозможно дерсериализовать объект в класс %s. Данный класс не определен", method.getReturnType()));
             }
-            return null;
         }
+        return result;
     }
 //  генерация хэша из массива агрументов
 //  с использованием "маски"

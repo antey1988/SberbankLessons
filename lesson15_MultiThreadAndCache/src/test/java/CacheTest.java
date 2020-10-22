@@ -29,7 +29,7 @@ public class CacheTest {
         service = new ServiceImp();
         rootDir = "/home/oleg/IdeaProjects/SberbankMaven/lesson15_MultiThreadAndCache/src/main/resources";
         //  = "E:\\User\\Oleg\\IdeaProjects\\_SberbankLessons\\lesson9_Cache\\src\\main\\resources";
-        cacheProxy = new CacheProxy(rootDir,true);
+        cacheProxy = new CacheProxy(rootDir);
         performanceProxy = new PerformanceProxy();
         service1 = cacheProxy.cache(service);
         service2 = performanceProxy.metric(service1);
@@ -100,7 +100,7 @@ public class CacheTest {
         }
 
         int[] expected = cacheProxy.getCountReqestAndCache("printStringInteger");
-        System.out.printf("Всего %d запросов, результаты %d взят из кэша, %d вычеслены и добавлены в кэш\n",
+        System.out.printf("Всего %d запросов, результаты %d взяты из кэша, %d вычеслены и добавлены в кэш\n",
                 expected[0], expected[0] - expected[1], expected[1]);
     }
 }
