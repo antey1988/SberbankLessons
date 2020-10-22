@@ -13,7 +13,7 @@ public class ServiceImp implements Service {
     @Override
     public String printStringInteger(String string, int n, Date date) {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
