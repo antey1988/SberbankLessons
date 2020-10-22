@@ -4,10 +4,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PerformanceProxy implements InvocationHandler {
     private Object object;
@@ -25,8 +29,8 @@ public class PerformanceProxy implements InvocationHandler {
                 Object value = method.invoke(object, args);
                 LocalTime stop = LocalTime.now();
                 Duration duration = Duration.between(start, stop);
-                System.out.printf("Время выполнения метода %s c параметрами %s объекта %s в потоке %s:  %d мс%n",
-                        method.getName(), Arrays.asList(args), object, Thread.currentThread().getName(), duration.toMillis());
+                System.out.printf("Время выполнения метода %s c параметрами %s объекта %s в потоке %s: %d мс%n",
+                        method.getName(), Arrays.asList(format(args)), object, Thread.currentThread().getName(), duration.toMillis());
                 return value;
             }
         }
@@ -47,5 +51,16 @@ public class PerformanceProxy implements InvocationHandler {
         return "PerformanceProxy{" +
                 "object=" + object +
                 '}';
+    }
+
+    private Object[] format(Object[] args) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy / hh:mm:ss:SS");
+        Object[] object = Arrays.stream(args).map(t->{
+            if (t instanceof Date) {
+                t = sdf.format((Date)t);
+            }
+            return t;
+        }).toArray();
+        return object;
     }
 }

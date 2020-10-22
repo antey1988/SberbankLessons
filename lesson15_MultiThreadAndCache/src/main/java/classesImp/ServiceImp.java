@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 public class ServiceImp implements Service {
     @Override
-    public String printStringInteger(String string, int n) {
+    public String printStringInteger(String string, int n, Date date) {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

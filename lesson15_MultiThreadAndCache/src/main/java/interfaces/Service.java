@@ -8,8 +8,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface Service {
-    @Cache(type = TypeCache.IN_FILE)
-    String printStringInteger(String string, int n);
+    @Metric
+    @Cache(identityBy = {String.class, int.class}, type = TypeCache.IN_FILE)
+    String printStringInteger(String string, int n, Date date);
 
     @Metric
     @Cache(identityBy = {String.class}, sizeList = 10, type = TypeCache.IN_MEMORY)

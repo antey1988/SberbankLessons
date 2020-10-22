@@ -19,13 +19,14 @@ public class CacheProxy implements InvocationHandler {
 
     private Object proxyObject;
     private final Map<String, Map<Integer, Object>> cacheValuesAllMethods = new ConcurrentHashMap<>();
+    private final Map<String, Map<Integer, File>> filesAllMethods = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger[]> countReqestAndCache = new ConcurrentHashMap<>();
     private final String rootDirectory;
-    private final boolean toDir;
+//    private final boolean toDir;
 
     public CacheProxy(String rootDirectory, boolean toDir) {
         this.rootDirectory = rootDirectory;
-        this.toDir = toDir;
+//        this.toDir = toDir;
     }
 
     @Override
@@ -121,43 +122,46 @@ public class CacheProxy implements InvocationHandler {
             throw new RuntimeException();
         }
 
-        String name;
-        File directory;
-        if (!toDir) {
-            directory = new File(rootDirectory);
-            name = prefix + "(" + postfix + ").txt";
-        } else {
-            directory = new File(rootDirectory + File.separatorChar + prefix);
-            name = "" + postfix  + ".txt";
-        }
-        if (!directory.exists())
-            directory.mkdirs();
-        File filename = new File(directory, name);
+        Map<Integer, File> filesMethod = filesAllMethods.computeIfAbsent(prefix, k -> new ConcurrentHashMap<>());
+        String finalPrefix = prefix;
+        File filename = filesMethod.computeIfAbsent(postfix, k-> {
+            String name = "" + postfix  + ".txt";
+            File directory = new File(rootDirectory + File.separatorChar + finalPrefix);
+            if (!directory.exists())
+                directory.mkdirs();
+            return new File(directory, name);
+        });
+        AtomicInteger[] count = countReqestAndCache.computeIfAbsent(prefix, k ->
+                new AtomicInteger[] {new AtomicInteger(), new AtomicInteger()});
+        synchronized (filename) {
+            try {
+                InputStream fis = new FileInputStream(filename);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                result = ois.readObject();
+                Class<?> returnType = method.getReturnType();
+                if ((returnType == List.class) && (cacheAnnotation.sizeList() > 0)) {
+                    int size = Math.min(((List) result).size(), cacheAnnotation.sizeList());
+                    result = ((List) result).subList(0, size);
+                }
+                count[0].incrementAndGet();
+                return result;
+            } catch (FileNotFoundException e) {
 
-        try {
-            InputStream fis = new FileInputStream(filename);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            result = ois.readObject();
-            Class<?> returnType = method.getReturnType();
-            if ((returnType == List.class) && (cacheAnnotation.sizeList() > 0)) {
-                int size = Math.min(((List) result).size(), cacheAnnotation.sizeList());
-                result = ((List) result).subList(0, size);
+                try (OutputStream fos = new FileOutputStream(filename)) {
+                    result = method.invoke(proxyObject, args);
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+                    oos.writeObject(result);
+                    count[0].incrementAndGet();
+                    count[1].incrementAndGet();
+                    return result;
+                } catch (IOException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
             }
-            return result;
-        } catch (FileNotFoundException e) {
-
-            try (OutputStream fos = new FileOutputStream(filename)) {
-                result = method.invoke(proxyObject, args);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(result);
-                return  result;
-            } catch (IOException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            }
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 //  генерация хэша из массива агрументов
 //  с использованием "маски"
