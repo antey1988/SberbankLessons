@@ -19,32 +19,32 @@ public class ExecutionManagerTest {
         //задачи tasks
         Runnable [] firstGroupTask = generateTasks("First Group", COUNTTASKS_1);
         //задача callback
-        Runnable firstCallback = new SleepTask(500, "First Callback");
+        Runnable firstCallback = new SleepTask(500, TimeUnit.MILLISECONDS, "First Callback");
         //задачи tasks
         Runnable [] secondGroupTask = generateTasks("Second Group", COUNTTASKS_2);
         //задача callback
-        Runnable secondCallback = new SleepTask(1000, "Second Callback");
+        Runnable secondCallback = new SleepTask(1000, TimeUnit.MILLISECONDS, "Second Callback");
         //задачи tasks
         Runnable [] thirdGroupTask = generateTasks("Third Group", COUNTTASKS_3);
         //задача callback
-        Runnable thirdCallback = new SleepTask(1000, "Third Callback");
+        Runnable thirdCallback = new SleepTask(1000, TimeUnit.MILLISECONDS, "Third Callback");
 
 
         Context context1 = executionManager.execute(firstCallback,firstGroupTask);
         Context context2 = executionManager.execute(secondCallback,secondGroupTask);
-//        Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
+        Context context3 = executionManager.execute(thirdCallback,thirdGroupTask);
 
-        sleepMain(1);
+        sleepMain(1500, TimeUnit.MILLISECONDS);
 //        sleepMain(2);
         context1.interrupt();
-        sleepMain(2);
+        sleepMain(1650, TimeUnit.MILLISECONDS);
         context2.interrupt();
-        sleepMain(2);
-//        context3.interrupt();
-        sleepMain(1);
+        sleepMain(2, TimeUnit.SECONDS);
+        context3.interrupt();
+        sleepMain(1, TimeUnit.SECONDS);
         checkContext(context1);
         checkContext(context2);
-//        checkContext(context3);
+        checkContext(context3);
         executionManager.shutdown();
 
         Assert.assertNotEquals(COUNTTASKS_1,
@@ -59,7 +59,7 @@ public class ExecutionManagerTest {
                     Runnable runnable;
                     if ((int)(count * Math.random() + 1)  >= count/5)
                         //задачи проснуться через определенное время
-                        runnable = new SleepTask(500 + (int)(Math.random()*500), "" + groupName + " Tasks (task sleep #" + t + ")");
+                        runnable = new SleepTask(450 + (int)(Math.random()*450), TimeUnit.MILLISECONDS, "" + groupName + " Tasks (task sleep #" + t + ")");
                     else
                         //задачи, бросающие ошибки
                         runnable = new ExceptionTask("" + groupName + " Tasks (task exception #" + t + ")");
@@ -75,9 +75,9 @@ public class ExecutionManagerTest {
         System.out.println("Количество задача, завершенных с ошибкой: " + context.getFailedTaskCount());
     }
 
-    private void sleepMain(int seconds) {
+    private void sleepMain(int time, TimeUnit timeUnit) {
         try {
-            TimeUnit.SECONDS.sleep(seconds);
+            timeUnit.sleep(time);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
