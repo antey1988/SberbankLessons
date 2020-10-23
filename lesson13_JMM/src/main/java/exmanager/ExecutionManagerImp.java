@@ -23,7 +23,7 @@ public class ExecutionManagerImp implements ExecutionManager{
     @Override
     public Context execute(Runnable callback, Runnable... tasks) {
         //пул потоков выполняещий задачи конкретного контекста
-        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + ++numberContext + " call Context", 0,5);
+        ScalableThreadPool threadPoolContext = new ScalableThreadPool("" + ++numberContext + " call Context", 5,5);
 
         Context context = new ContextImp(tasks.length+1, threadPoolContext);
         //защелка, отслежиает заверщение всех задач из массива tasks
@@ -49,6 +49,7 @@ public class ExecutionManagerImp implements ExecutionManager{
                     threadPoolContext.incrementInterruptedTaskCount(); //в случае запроса на прерывание по команде shutdown(),
                                                                         //увеличиваем счетчик прерванных задач
                     threadPoolContext.addInterruptedTask(callback);
+                    Thread.currentThread().interrupt();
                 } catch (Exception e) {
                     threadPoolContext.incrementFailedTaskCount(); //в случае ошибки - счетчик "Безуспешных задач"
                 }
