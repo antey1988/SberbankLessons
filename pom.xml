@@ -22,6 +22,7 @@
         <module>lesson13_JMM</module>
         <module>lesson15_MultiThreadAndCache</module>
         <module>lesson16_Pattern</module>
+        <module>lesson17_JDBC</module>
         <!--        <module>Friends</module>-->
     </modules>
 
@@ -54,6 +55,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.slf4j</groupId>-->
@@ -65,15 +67,15 @@
 <!--        </dependency>-->
     </dependencies>
 
-    <dependencyManagement>
+    <!--<dependencyManagement>
         <dependencies>
-            <!-- Тесты -->
+            &lt;!&ndash; Тесты &ndash;&gt;
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
         </dependencies>
-    </dependencyManagement>
+    </dependencyManagement>-->
 
 </project>

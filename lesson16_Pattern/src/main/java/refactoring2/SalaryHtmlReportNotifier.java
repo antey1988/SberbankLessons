@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 public class SalaryHtmlReportNotifier {
 
-    private Connection connection;
+    private final Connection connection;
 
     public SalaryHtmlReportNotifier(Connection databaseConnection) {
         this.connection = databaseConnection;
