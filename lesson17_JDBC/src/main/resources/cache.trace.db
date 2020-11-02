@@ -1,0 +1,86 @@
+2020-11-02 15:25:59 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "FIDBONACHI" не найдена
+Table "FIDBONACHI" not found; SQL statement:
+SELECT * FROM fIdBONACHI [42102-200]
+2020-11-02 16:27:04 database: flush
+org.h2.message.DbException: Внутренняя ошибка: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]" [50000-200]
+	at org.h2.message.DbException.get(DbException.java:194)
+	at org.h2.message.DbException.convert(DbException.java:347)
+	at org.h2.mvstore.db.MVTableEngine$1.uncaughtException(MVTableEngine.java:93)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:2877)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:481)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:402)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:3579)
+	at org.h2.mvstore.db.MVTableEngine$Store.open(MVTableEngine.java:170)
+	at org.h2.mvstore.db.MVTableEngine.init(MVTableEngine.java:103)
+	at org.h2.engine.Database.getPageStore(Database.java:2659)
+	at org.h2.engine.Database.open(Database.java:675)
+	at org.h2.engine.Database.openDatabase(Database.java:307)
+	at org.h2.engine.Database.<init>(Database.java:301)
+	at org.h2.engine.Engine.openSession(Engine.java:74)
+	at org.h2.engine.Engine.openSession(Engine.java:192)
+	at org.h2.engine.Engine.createSessionAndValidate(Engine.java:171)
+	at org.h2.engine.Engine.createSession(Engine.java:166)
+	at org.h2.engine.Engine.createSession(Engine.java:29)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:340)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:173)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:152)
+	at org.h2.Driver.connect(Driver.java:69)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:270)
+	at ManagerDBImp.openConnection(ManagerDBImp.java:12)
+	at CacheProxy.loadingCacheFromDBToMemory(CacheProxy.java:79)
+	at CacheProxy.cache(CacheProxy.java:47)
+	at CalculatorImp.main(CalculatorImp.java:24)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Внутренняя ошибка: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]" [50000-200]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:505)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
+	... 28 more
+Caused by: java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]
+	at org.h2.mvstore.DataUtils.newIllegalStateException(DataUtils.java:950)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:381)
+	... 22 more
+2020-11-02 16:28:06 database: flush
+org.h2.message.DbException: Внутренняя ошибка: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]" [50000-200]
+	at org.h2.message.DbException.get(DbException.java:194)
+	at org.h2.message.DbException.convert(DbException.java:347)
+	at org.h2.mvstore.db.MVTableEngine$1.uncaughtException(MVTableEngine.java:93)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:2877)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:481)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:402)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:3579)
+	at org.h2.mvstore.db.MVTableEngine$Store.open(MVTableEngine.java:170)
+	at org.h2.mvstore.db.MVTableEngine.init(MVTableEngine.java:103)
+	at org.h2.engine.Database.getPageStore(Database.java:2659)
+	at org.h2.engine.Database.open(Database.java:675)
+	at org.h2.engine.Database.openDatabase(Database.java:307)
+	at org.h2.engine.Database.<init>(Database.java:301)
+	at org.h2.engine.Engine.openSession(Engine.java:74)
+	at org.h2.engine.Engine.openSession(Engine.java:192)
+	at org.h2.engine.Engine.createSessionAndValidate(Engine.java:171)
+	at org.h2.engine.Engine.createSession(Engine.java:166)
+	at org.h2.engine.Engine.createSession(Engine.java:29)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:340)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:173)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:152)
+	at org.h2.Driver.connect(Driver.java:69)
+	at java.sql.DriverManager.getConnection(DriverManager.java:664)
+	at java.sql.DriverManager.getConnection(DriverManager.java:270)
+	at ManagerDBImp.openConnection(ManagerDBImp.java:12)
+	at CacheProxy.loadingCacheFromDBToMemory(CacheProxy.java:79)
+	at CacheProxy.cache(CacheProxy.java:47)
+	at CalculatorImp.main(CalculatorImp.java:24)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Внутренняя ошибка: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]"
+General error: "java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]" [50000-200]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:505)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:429)
+	... 28 more
+Caused by: java.lang.IllegalStateException: The file is locked: nio:/home/oleg/IdeaProjects/SberbankMaven/lesson17_JDBC/src/main/resources/cache.mv.db [1.4.200/7]
+	at org.h2.mvstore.DataUtils.newIllegalStateException(DataUtils.java:950)
+	at org.h2.mvstore.FileStore.open(FileStore.java:172)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:381)
+	... 22 more
