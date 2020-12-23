@@ -10,7 +10,6 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CacheProxy implements InvocationHandler {
     private final Object objectProxy;
@@ -51,7 +50,7 @@ public class CacheProxy implements InvocationHandler {
     }
 
     private void findAllSources() {
-        List<Method> methods = Arrays.stream(objectProxy.getClass().getInterfaces()).map(t->t.getMethods())
+        List<Method> methods = Arrays.stream(objectProxy.getClass().getInterfaces()).map(Class::getMethods)
                 .flatMap(Arrays::stream).collect(Collectors.toList());
         Map<Class<? extends Source>, Source> DBs = new HashMap<>();
         for(Method method : methods) {

@@ -23,6 +23,7 @@
         <module>lesson15_MultiThreadAndCache</module>
         <module>lesson16_Pattern</module>
         <module>lesson17_JDBC</module>
+        <module>LessonXX_ORM_Hibernate</module>
         <!--        <module>Friends</module>-->
     </modules>
 
@@ -66,16 +67,4 @@
 <!--            <artifactId>logback-classic</artifactId>-->
 <!--        </dependency>-->
     </dependencies>
-
-    <!--<dependencyManagement>
-        <dependencies>
-            &lt;!&ndash; Тесты &ndash;&gt;
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>-->
-
 </project>
