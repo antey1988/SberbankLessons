@@ -1,8 +1,9 @@
 package enums;
 
 public enum UnitsMeasurement {
-    GRAMMS,
-    KILOGRAMMS,
+    GRAMS,
+    KILOGRAMS,
     LITER,
-    MILLILITER
+    MILLILITER,
+    PIECES
 }
