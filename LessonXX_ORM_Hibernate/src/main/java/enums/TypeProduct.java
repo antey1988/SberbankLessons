@@ -4,5 +4,11 @@ public enum TypeProduct {
     VEGETABLES,
     FRUITS,
     GROCERY,
-    MEAT
+    MEAT,
+    NULL;
+
+    TypeProduct() {
+    }
+
+
 }

@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = {"dao", "enums"})
+@ComponentScan(basePackages = {"dao"})
 @EnableTransactionManagement
 public class AppConfig {
 
