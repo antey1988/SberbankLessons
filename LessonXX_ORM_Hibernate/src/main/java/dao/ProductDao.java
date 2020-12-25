@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProductDao {
     List<Product> allProducts();
-    List<Dish> findDishesWhitProduct(String nameProduct);
     Product save(Product product);
-    void delete(Product product);
+    void delete(List<Product> products);
+    List<Product> productByName(String name);
 }

@@ -2,6 +2,7 @@ package dao;
 
 import entities.Dish;
 import entities.Product;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,24 +33,36 @@ public class ProductDaoImp implements ProductDao {
     @Override
     @Transactional(readOnly = true)
     public List<Product> allProducts() {
-        logger.info("Method AllProducts()");
+        logger.info("Method allProducts()");
         return sessionFactory.getCurrentSession()
                 .createQuery("select p from Product p")
-                .getResultList();
-    }
-
-    @Override
-    public List<Dish> findDishesWhitProduct(String nameProduct) {
-        return null;
+                .list();
     }
 
     @Override
     public Product save(Product product) {
-        return null;
+        logger.info("Method save()");
+        sessionFactory.getCurrentSession().saveOrUpdate(product);
+        logger.info("Product saved with id: " + product.getId());
+        return product;
     }
 
     @Override
-    public void delete(Product product) {
+    public void delete(List<Product> products) {
+        logger.info("Method delete()");
+        Session currentSession = sessionFactory.getCurrentSession();
+        for (Product product : products) {
+            currentSession.delete(product);
+            logger.info("Product deleted with id: " + product.getId());
+        }
+    }
 
+    @Override
+    public List<Product> productByName(String name) {
+        logger.info("Method productByName()");
+        return sessionFactory.getCurrentSession()
+                .createQuery("select p from Product p where p.name = :name")
+                .setParameter("name", name)
+                .list();
     }
 }
