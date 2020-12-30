@@ -4,16 +4,26 @@ import enums.Cuisine;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
 @Table(name = "DISH")
+@NamedQueries({
+        @NamedQuery(name = "Dish.allDishesByName",
+        query = "select d from Dish d " +
+                "where d.name like :name"),
+        @NamedQuery(name = "Dish.allDishesWithProduct",
+                query = "select distinct d from Dish d " +
+                        "left join fetch d.products")
+}
+)
 public class Dish implements Serializable {
 
     private Long id;
     private String name;
     private Cuisine cuisine;
-    private Map<Product, Integer> products;
+    private Map<Product, Integer> products = new HashMap<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,9 +67,9 @@ public class Dish implements Serializable {
         this.products = products;
     }
 
-    public int addProducts(Product product, int quatity) {
+    public void addProducts(Product product, int quatity) {
         product.getDishes().put(this, quatity);
-        return products.put(product, quatity);
+        products.put(product, quatity);
     }
 
     public boolean removeProduct(Product product) {

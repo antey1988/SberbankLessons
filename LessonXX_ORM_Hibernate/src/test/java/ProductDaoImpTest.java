@@ -2,7 +2,10 @@ import config.AppConfig;
 import dao.ProductDao;
 import entities.Product;
 import enums.UnitsMeasurement;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,8 +46,8 @@ public class ProductDaoImpTest {
     public void testAllProducts() {
         logger.info("Testing method AllProducts()");
         List<Product> products = productDao.allProducts();
-        Assert.assertEquals(products.size(), 7);
         printProducts(products);
+        Assert.assertEquals(products.size(), 7);
     }
 
     @Test

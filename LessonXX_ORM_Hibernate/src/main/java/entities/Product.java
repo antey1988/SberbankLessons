@@ -5,6 +5,7 @@ import enums.UnitsMeasurement;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -15,7 +16,7 @@ public class Product implements Serializable {
     private String name;
     private TypeProduct type;
     private UnitsMeasurement units;
-    private Map<Dish,Integer> dishes;
+    private Map<Dish,Integer> dishes = new HashMap<>();
 
     public Product() {
     }
@@ -71,6 +72,10 @@ public class Product implements Serializable {
     public void setDishes(Map<Dish, Integer> dishes) {
         this.dishes = dishes;
     }
+
+    /*public int addDish(Dish dish, int quatity) {
+
+    }*/
 
     @Override
     public String toString() {

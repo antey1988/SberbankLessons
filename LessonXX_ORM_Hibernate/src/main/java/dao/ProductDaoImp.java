@@ -33,7 +33,7 @@ public class ProductDaoImp implements ProductDao {
     @Override
     @Transactional(readOnly = true)
     public List<Product> allProducts() {
-        logger.info("Method allProducts()");
+//        logger.info("Method allProducts()");
         return sessionFactory.getCurrentSession()
                 .createQuery("select p from Product p")
                 .list();
@@ -41,7 +41,7 @@ public class ProductDaoImp implements ProductDao {
 
     @Override
     public Product save(Product product) {
-        logger.info("Method save()");
+//        logger.info("Method save()");
         sessionFactory.getCurrentSession().saveOrUpdate(product);
         logger.info("Product saved with id: " + product.getId());
         return product;
@@ -49,17 +49,21 @@ public class ProductDaoImp implements ProductDao {
 
     @Override
     public void delete(List<Product> products) {
-        logger.info("Method delete()");
         Session currentSession = sessionFactory.getCurrentSession();
         for (Product product : products) {
             currentSession.delete(product);
             logger.info("Product deleted with id: " + product.getId());
+            if (product.getDishes().size() != 0) {
+                product.getDishes().keySet().forEach(dish -> {
+                    currentSession.delete(dish);
+                    logger.info("Dish deleted with id: " + dish.getId());
+                });
+            }
         }
     }
 
     @Override
     public List<Product> productByName(String name) {
-        logger.info("Method productByName()");
         return sessionFactory.getCurrentSession()
                 .createQuery("select p from Product p where p.name = :name")
                 .setParameter("name", name)

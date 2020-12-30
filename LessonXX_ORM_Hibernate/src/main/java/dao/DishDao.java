@@ -8,5 +8,5 @@ public interface DishDao {
     List<Dish> allDishesByName(String dishName);
     List<Dish> allDishesWithProduct();
     Dish save(Dish dish);
-    void delete(Dish dish);
+    void delete(List<Dish> dish);
 }
